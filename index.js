@@ -5,7 +5,7 @@ const socketIo = require("socket.io");
  require('dotenv').config();
 
 const app = express();
-const port =  4500 || process.env.PORT ; //when we host online this whatever the port is it, it will take that
+const port =   process.env.PORT ; //when we host online this whatever the port is it, it will take that
 const server = http.createServer(app);
 app.use(cors()); //for communicating between the URL
 
