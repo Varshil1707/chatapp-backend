@@ -2,43 +2,35 @@ const http = require("http");
 const express = require("express");
 const cors = require("cors");
 const socketIo = require("socket.io");
- require('dotenv').config();
-const portDemo = process.env.PORT 
+require("dotenv").config();
+const portDemo =  process.env.PORT;
 const app = express();
-const port =  portDemo ; //when we host online this whatever the port is it, it will take that
+const port = portDemo;
 const server = http.createServer(app);
-app.use(cors()); //for communicating between the URL
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("Its Working");
 });
 const users = [];
-const io = socketIo(server); // here we made a connection
+const io = socketIo(server);
 
 io.on("connection", (socket) => {
-  
   console.log("New Connection");
-
   socket.on("joined", ({ user }) => {
-    users[socket.id] = user; //user will be stored at socket.
+    
+    users[socket.id] = user;
     console.log(`${user} is  joined`);
     socket.broadcast.emit("userJoined", {
       user: "Admin",
       message: `Welcome to the chart ${user}`,
     });
-    //broadcast means message will be sent to all the user except the person himself
-    //As soon as the circuit on this will be console ... for example(xyz user has joined in WP)
+
     socket.emit("welcome", { user: "Admin", message: "Welcome to the chat" });
   });
 
   socket.on("message", ({ message, id }) => {
-    
-    io.emit("sentMessage", { user: users[id], message: message, id }); //Here we use io.on because we need to show the message to all the user including the sender
-  });
-
-  socket.on("disconnected", () => {
-    socket.broadcast.emit("leave", { user: "Admin", message: "User Left" });
-    console.log("user left");
+    io.emit("sentMessage", { user: users[id], message: message, id });
   });
 });
 
