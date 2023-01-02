@@ -23,7 +23,7 @@ io.on("connection", (socket) => {
     console.log(`${user} is  joined`);
     socket.broadcast.emit("userJoined", {
       user: "Admin",
-      message: `Welcome to the chart ${user}`,
+      message: `Welcome to the chat ${user}`,
     });
 
     socket.emit("welcome", { user: "Admin", message: "Welcome to the chat" });
