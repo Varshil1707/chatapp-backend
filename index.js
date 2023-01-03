@@ -14,9 +14,16 @@ app.get("/", (req, res) => {
 });
 const users = [];
 const io = socketIo(server);
-
+let message = "left"
 io.on("connection", (socket) => {
   console.log("New Connection");
+  socket.on('disconnect',()=>
+    {
+      console.log("disconnected")
+      socket.broadcast.emit('disconnect-method', message )
+    }
+  )
+
   socket.on("joined", ({ user }) => {
     
     users[socket.id] = user;
@@ -32,6 +39,7 @@ io.on("connection", (socket) => {
   socket.on("message", ({ message, id }) => {
     io.emit("sentMessage", { user: users[id], message: message, id });
   });
+
 });
 
 if (process.env.PORT == "production") {
