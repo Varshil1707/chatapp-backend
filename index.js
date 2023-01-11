@@ -1,5 +1,7 @@
 const http = require("http");
 const express = require("express");
+const authentication = require('./authentication');
+const router = require('./authentication')
 const cors = require("cors");
 const socketIo = require("socket.io");
 require("dotenv").config();
@@ -9,9 +11,9 @@ const port = portDemo;
 const server = http.createServer(app);
 app.use(cors());
 
-app.get("/", (req, res) => {
-  res.send("Its Working");
-});
+// app.get("/", (req, res) => {
+//   res.send("Its Working");
+// });
 const users = [];
 const io = socketIo(server);
 let message = "left"
@@ -23,6 +25,7 @@ io.on("connection", (socket) => {
       socket.broadcast.emit('disconnect-method', message )
     }
   )
+    app.use('/',router)
 
   socket.on("joined", ({ user }) => {
     
@@ -45,6 +48,7 @@ io.on("connection", (socket) => {
 if (process.env.PORT == "production") {
   app.use(express.static("cchat/build"));
 }
+
 
 server.listen(port, () => {
   console.log(`server is working on http://localhost:${port}`);
