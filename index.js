@@ -19,15 +19,20 @@ const io = socketIo(server);
 let message = "left";
 
 io.on("connection", (socket) => {
+  // console.log(socket)
   console.log("New Connection");
-  socket.emit("clientsCount", {count : io.engine.clientsCount})
-  console.log("Line 26",io.engine.clientsCount)
+  socket.emit("clientsCount", { count: io.engine.clientsCount });
+  socket.on("clientsCount-again",(data)=>{
+    socket.emit("updated-clientsCount",{updatedCount : io.engine.clientsCount })
+  })
+  console.log("Line 26", io.engine.clientsCount);
   socket.on("joined", ({ user }) => {
     users[socket.id] = user;
     console.log(`${user} is  joined`);
     socket.broadcast.emit("userJoined", {
       user: "Admin",
       message: `Welcome to the chat ${user}`,
+      clientCount: io.engine.clientsCount,
     });
 
     socket.emit("welcome", {
@@ -37,7 +42,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("message", ({ message, id }) => {
-    io.emit("sentMessage", { user: users[id], message: message, id });
+    io.emit("sentMessage", {
+      user: users[id],
+      message: message,
+      id,
+      // clientCount: io.engine.clientsCount,
+    });
   });
 });
 
